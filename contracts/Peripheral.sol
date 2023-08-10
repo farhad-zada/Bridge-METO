@@ -64,8 +64,8 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _disableInitializers();
     }
 
-    function initialize() public initializer {
-        soto = ISOTO(0x02589a13010223b8a60106D6CAf2d51032Ec73ed);
+    function initialize(address _token) public initializer {
+        soto = ISOTO(_token);
         __Ownable_init();
         __UUPSUpgradeable_init();
     }
@@ -93,8 +93,8 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             revert InsufficentFee(chains[chainId].fee);
 
         ///@dev check if the msg.sender has enough allowance, more or equal to amount
-        uint256 allowance = soto.allowance(msg.sender, address(this));
-        if (allowance < amount) revert InsufficientAllowance(allowance);
+        uint256 balance = soto.balanceOf(msg.sender);
+        if (balance < amount) revert InsufficientAllowance(balance);
         totalLocked += amount;
         index++;
         transfersOut[msg.sender].push(index);
