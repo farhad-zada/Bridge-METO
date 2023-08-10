@@ -95,7 +95,7 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         ///@dev check if the msg.sender has enough allowance, more or equal to amount
         uint256 balance = soto.balanceOf(msg.sender);
         if (balance < amount) revert InsufficientAllowance(balance);
-        totalLocked += amount;
+        totalLocked -= amount;
         index++;
         transfersOut[msg.sender].push(index);
         soto.burnOf(msg.sender, amount);
@@ -111,7 +111,7 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         address to,
         uint256 amount
     ) public admin(msg.sender) {
-        totalLocked -= amount;
+        totalLocked += amount;
         transfersIn[from].push(messageId);
         soto.mint(to, amount);
         emit Accepted(messageId, chainId, source, from, to, amount);
