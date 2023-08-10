@@ -18,8 +18,8 @@ contract Lock is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     uint256 public index;
     uint256 public totalLocked;
-    //0x02589a13010223b8a60106D6CAf2d51032Ec73ed
-    ISOTO public soto; //SOTO in sepolia
+
+    ISOTO public soto;
 
     struct Chain {
         uint256 id;
@@ -89,7 +89,7 @@ contract Lock is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     ) public payable {
         ///@dev check if chain ID is a valid ID supported by contract
         if (!chains[chainId].status) revert InvalidChainId(chainId);
-        if (chains[chainId].fee < msg.value)
+        if (chains[chainId].fee > msg.value)
             revert InsufficentFee(chains[chainId].fee);
 
         ///@dev check if the msg.sender has enough allowance, more or equal to amount
