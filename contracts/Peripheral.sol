@@ -65,6 +65,7 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     }
 
     function initialize(address _token) public initializer {
+        adminAddresses[msg.sender] = true;
         soto = ISOTO(_token);
         __Ownable_init();
         __UUPSUpgradeable_init();

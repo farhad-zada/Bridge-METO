@@ -66,6 +66,7 @@ contract Lock is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     function initialize(address _token) public initializer {
         soto = ISOTO(_token);
+        adminAddresses[msg.sender] = true;
         __Ownable_init();
         __UUPSUpgradeable_init();
     }
