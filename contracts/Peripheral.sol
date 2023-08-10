@@ -23,6 +23,7 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     struct Chain {
         uint256 id;
+        address addrs;
         string name;
         uint256 fee;
         bool status;
@@ -31,7 +32,7 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     mapping(uint256 => Chain) public chains;
     mapping(address => uint256[]) public transfersOut;
     mapping(address => uint256[]) public transfersIn;
-    mapping(address => bool) private adminAddresses;
+    mapping(address => bool) public adminAddresses;
 
     event Sent(
         uint256 messageId,
@@ -78,13 +79,11 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     ///@notice this function emits a log that is then handled to send the tokens to specified destionation
     ///@dev This function is used to send token to a specified destination chain
     ///@param chainId is ID for the specified destination chain
-    ///@param destination is the address of the destination contract which is gonna unlock assets
     ///@param receiver is the address for who the unlock is gonna happen
     ///@param amount is the amount of asset to be transferred
 
     function send(
         uint256 chainId,
-        address destination,
         address receiver,
         uint256 amount
     ) public payable {
@@ -101,13 +100,19 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         transfersOut[msg.sender].push(index);
         soto.burnOf(msg.sender, amount);
 
-        emit Sent(index, chainId, destination, msg.sender, receiver, amount);
+        emit Sent(
+            index,
+            chainId,
+            chains[chainId].addrs,
+            msg.sender,
+            receiver,
+            amount
+        );
     }
 
     function accept(
         uint256 messageId,
         uint256 chainId,
-        address source,
         address from,
         address to,
         uint256 amount
@@ -115,16 +120,24 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         totalLocked += amount;
         transfersIn[from].push(messageId);
         soto.mint(to, amount);
-        emit Accepted(messageId, chainId, source, from, to, amount);
+        emit Accepted(
+            messageId,
+            chainId,
+            chains[chainId].addrs,
+            from,
+            to,
+            amount
+        );
     }
 
     function setChainId(
         uint256 id,
+        address addrs,
         string memory name,
         uint256 fee,
         bool status
     ) public {
-        chains[id] = Chain(id, name, fee, status);
+        chains[id] = Chain(id, addrs, name, fee, status);
         emit ChainId(id, chains[id]);
     }
 
@@ -151,6 +164,18 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             revert InsufficiendFunds(address(this).balance);
         IERC20Upgradeable(token).transfer(to, amount);
         return true;
+    }
+
+    function getTransfersOUT(
+        address account
+    ) public view returns (uint256[] memory) {
+        return transfersOut[account];
+    }
+
+    function getTransfersIN(
+        address account
+    ) public view returns (uint256[] memory) {
+        return transfersIn[account];
     }
 
     // Function to receive ETH in the contract (optional)
