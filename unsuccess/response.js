@@ -1,4 +1,4 @@
-const bridgeDetails = require("./bridgeDetails")
+const bridgeDetails = require("../main/bridgeDetails")
 
 module.exports = async (from, to) => {
     console.log("Getting events...")

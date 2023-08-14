@@ -1,4 +1,4 @@
-const execute = require("./execute")
+const execute = require("../main/execute")
 module.exports = async (from, to, unaccepted) => {
     const keys = Object.keys(unaccepted)
     const executedTrnxs = []

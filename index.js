@@ -1,8 +1,8 @@
 const ethers = require("ethers")
 require("dotenv").config()
-const bridgeDetails = require("./bridgeDetails")
-const proccessTrnx = require("./proccessTrnx")
-const execute = require("./execute")
+const bridgeDetails = require("./main/bridgeDetails")
+const proccessTrnx = require("./main/proccessTrnx")
+const execute = require("./main/execute")
 const logEventReceived = require("./loggers/logEventReceived")
 
 const MAX_RETRIES = 10
@@ -25,9 +25,7 @@ async function main(id, retrie) {
                 )
 
                 const tx = execute(messageId, chainId, from, to, amount)
-                proccessTrnx(id, chainId, event.log.transactionHash, await tx)
-                    .then((trnx) => console.log({ transaction: trnx }))
-                    .catch((err) => console.log(err))
+                proccessTrnx(id, chainId, event.log.transactionHash, tx)
             } catch (err) {
                 console.error(`Error proccessing event: ${err}`)
                 if (retrie < MAX_RETRIES) {
