@@ -12,8 +12,9 @@ async function main(from, to) {
             console.log(err)
         }
     })
-
-    console.log({ "Unaccepted Events Count": resp["Unaccepted Events Count"] })
+    const tmp = Object.assign({}, resp)
+    delete tmp["unaccepted"]
+    console.log(tmp)
 
     if (
         (process.argv[2] === "--execute") &
@@ -29,14 +30,14 @@ async function main(from, to) {
         )
 
         console.log("Execution done! ✅")
-        console.log(executedReceips)
-        const respAfter = await response(from, to)
-        console.log({
-            "Unaccepted Events Count": resp["Unaccepted Events Count"],
-        })
-    } else {
-        delete resp["unaccepted"]
-        console.log(resp)
+        console.log(
+            "In order to check if all the unsuccessful transfers has been handled " +
+                "please run the previous command again!"
+        )
+    } else if (resp["Unaccepted Events Count"] === 0) {
+        console.log(
+            `Congrats! 🍺 0 unaccepted transfers from: ${from} to: ${to}`
+        )
     }
     console.log("Finished the CMD ✅")
 }

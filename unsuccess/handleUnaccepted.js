@@ -10,7 +10,7 @@ module.exports = async (from, to, unaccepted) => {
     }
 
     const receips = executedTrnxs.map((trnx) => {
-        return trnx.wait(2)
+        return trnx.wait(1)
     })
 
     const executedReceips = await Promise.all(receips)
