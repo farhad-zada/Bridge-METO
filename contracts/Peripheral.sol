@@ -146,6 +146,14 @@ contract Peripheral is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         emit AdminSet(who, status);
     }
 
+    function setFee(
+        uint256 chainId,
+        uint256 newFee
+    ) public admin(msg.sender) returns (bool) {
+        chains[chainId].fee = newFee;
+        return true;
+    }
+
     function withdraw(
         address token,
         address payable to,
